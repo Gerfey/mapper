@@ -1,0 +1,40 @@
+{
+  "name": "gerfey/mapper",
+  "version": "0.0.1",
+  "type": "library",
+  "description": "Map nested JSON structures.",
+  "keywords": ["Mapper", "Json", "JsonMapper"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alexander Levchenkov",
+      "email": "sanjia@live.ru",
+      "homepage": "https://github.com/gerfey",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "ext-mbstring": "*",
+    "ext-json": "*",
+    "ext-reflection": "*"
+  },
+  "require-dev": {
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-reflection": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Gerfey\\Mapper\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Gerfey\\Mapper\\Tests\\": "tests/"
+    }
+  }
+}
