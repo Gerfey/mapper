@@ -7,22 +7,20 @@ use Gerfey\Mapper\Mapper;
 class ArrayMapper extends Mapper
 {
     /**
-     * @param object $object
+     * @param string $strClassName
      * @param array $context
      * @return object
+     * @throws \ReflectionException
      */
-    public function map($object, $context)
+    public function map(string $strClassName, $context)
     {
         if (!is_array($context)) {
             throw new \InvalidArgumentException(
-                'Requires second argument to be an object'
+                'ArrayMapper::map() requires second argument to be an object'
                 . ', ' . gettype($context) . ' given.'
             );
         }
 
-        foreach ($context as $key => $value) {
-            $this->fillData($object, $key, $value);
-        }
-        return $object;
+        return $this->fillData($strClassName, $context);
     }
 }

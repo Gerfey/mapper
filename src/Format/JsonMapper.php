@@ -7,22 +7,29 @@ use Gerfey\Mapper\Mapper;
 class JsonMapper extends Mapper
 {
     /**
-     * @param object $object
+     * @param string $strClassName
      * @param object $context
      * @return object
+     * @throws \ReflectionException
      */
-    public function map($object, $context)
+    public function map(string $strClassName, $context)
     {
         if (!is_object($context)) {
             throw new \InvalidArgumentException(
-                'Requires second argument to be an object'
+                'ArrayMapper::map() requires second argument to be an object'
                 . ', ' . gettype($context) . ' given.'
             );
         }
 
-        foreach ($context as $key => $value) {
-            $this->fillData($object, $key, $value);
-        }
-        return $object;
+        return $this->fillData($strClassName, $this->convertJsonToArray($context));
+    }
+
+    /**
+     * @param $context
+     * @return mixed
+     */
+    private function convertJsonToArray($context)
+    {
+        return json_decode(json_encode($context), true);
     }
 }

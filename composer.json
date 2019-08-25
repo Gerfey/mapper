@@ -1,6 +1,6 @@
 {
   "name": "gerfey/mapper",
-  "version": "0.2",
+  "version": "0.3",
   "type": "library",
   "description": "Map nested Json|Array structures.",
   "keywords": ["Mapper", "Json", "Array", "JsonMapper", "ArrayMapper"],
@@ -17,7 +17,8 @@
     "php": "^7.1",
     "ext-mbstring": "*",
     "ext-json": "*",
-    "ext-reflection": "*"
+    "ext-reflection": "*",
+    "doctrine/annotations": "^1.7"
   },
   "require-dev": {
     "ext-json": "*",
