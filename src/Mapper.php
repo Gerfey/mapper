@@ -3,14 +3,13 @@
 namespace Gerfey\Mapper;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Gerfey\Mapper\Annotation\Field;
 use Gerfey\Mapper\Annotation\Rule;
 use Gerfey\Mapper\Rule\RuleMapper;
 
 abstract class Mapper implements MapperInterface
 {
-    protected $object;
-
     private $reader;
 
     /**
@@ -32,8 +31,11 @@ abstract class Mapper implements MapperInterface
      */
     protected function fillData(string $strClassName, $context)
     {
+        // Для работы не в Symfony проектах
+        AnnotationRegistry::registerLoader('class_exists');
+
         $class = new \ReflectionClass($strClassName);
-        $this->object = $class->newInstanceWithoutConstructor();
+        $object = $class->newInstanceWithoutConstructor();
 
         foreach ($class->getProperties() as $property) {
             $field = $this->reader->getPropertyAnnotation($property, Field::class);
@@ -42,13 +44,24 @@ abstract class Mapper implements MapperInterface
 
             if (!isset($propertyName)) continue;
 
-            $value = '';
+            $value = null;
             if (!empty($field)) {
                 if ($field->name == null) {
                     $field->name = $propertyName;
                 }
-                if ($this->checkContext($context, $field->name)) {
-                    $value = $this->inspectValue($context[$field->name], $field->type);
+                if (!empty($field->passIn)) {
+                    $className = $class->getNamespaceName() . "\\" . $field->passIn;
+                    if ($this->isMultidimensional($context[$field->name])) {
+                        foreach ($context[$field->name] as $contextValue) {
+                            $value[] = $this->fillData($className, $contextValue);
+                        }
+                    } else {
+                        $value = $this->fillData($className, $context[$field->name]);
+                    }
+                } else {
+                    if ($this->checkContext($context, $field->name)) {
+                        $value = $this->inspectValue($context[$field->name], $field->type);
+                    }
                 }
             } else {
                 if ($this->checkContext($context, $propertyName)) {
@@ -63,16 +76,16 @@ abstract class Mapper implements MapperInterface
             }
 
             if ($property->isPublic()) {
-                $this->object->{$propertyName} = $value;
+                $object->{$propertyName} = $value;
             } else {
                 $method = $this->getMethodName($propertyName);
                 if ($class->hasMethod($method)) {
-                    $this->object->$method($value);
+                    $object->$method($value);
                 }
             }
         }
 
-        return $this->object;
+        return $object;
     }
 
     /**
@@ -126,7 +139,7 @@ abstract class Mapper implements MapperInterface
                 if (preg_match($validPattern, $data)) {
                     $value = new \DateTime($data);
                 } else {
-                    $value = (string)$data;
+                    $value = new \DateTime(date('Y-m-d H:i:s', strtotime($data)));
                 }
                 break;
             default:
@@ -164,6 +177,14 @@ abstract class Mapper implements MapperInterface
      */
     private function checkContext($context, string $key): bool
     {
-        return !empty($context[$key]);
+        return isset($context[$key]);
+    }
+
+    private function isMultidimensional(array $arr): bool
+    {
+        foreach ($arr as $value) {
+            if (is_array($value)) return true;
+        }
+        return false;
     }
 }

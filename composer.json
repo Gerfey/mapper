@@ -1,6 +1,6 @@
 {
   "name": "gerfey/mapper",
-  "version": "0.3",
+  "version": "0.4",
   "type": "library",
   "description": "Map nested Json|Array structures.",
   "keywords": ["Mapper", "Json", "Array", "JsonMapper", "ArrayMapper"],
