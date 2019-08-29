@@ -70,7 +70,7 @@ use Gerfey\Mapper\Format\ArrayMapper;
 $mapper = new ArrayMapper();
 $entity = $mapper->map(User::class, [
     'id' => "1",
-    'first_name' => "Alexander",
+    'first_name' => "Александр",
     'address' => [
         'street' => 'просп. имени газеты Красноярский Рабочий',
         'city' => 'Красноярск'
