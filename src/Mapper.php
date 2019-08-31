@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Gerfey\Mapper\Annotation\Field;
 use Gerfey\Mapper\Annotation\Rule;
-use Gerfey\Mapper\Rule\RuleMapper;
+use Gerfey\Mapper\Converter\DataConverter;
 
 abstract class Mapper implements MapperInterface
 {
@@ -39,6 +39,7 @@ abstract class Mapper implements MapperInterface
 
         foreach ($class->getProperties() as $property) {
             $field = $this->reader->getPropertyAnnotation($property, Field::class);
+            $rule = $this->reader->getPropertyAnnotation($property, Rule::class);
 
             $propertyName = $this->inspectPropertyName($class, $property);
 
@@ -60,19 +61,13 @@ abstract class Mapper implements MapperInterface
                     }
                 } else {
                     if ($this->checkContext($context, $field->name)) {
-                        $value = $this->inspectValue($context[$field->name], $field->type);
+                        $value = DataConverter::convert($context[$field->name], $field->type, $rule);
                     }
                 }
             } else {
                 if ($this->checkContext($context, $propertyName)) {
-                    $value = $this->inspectValue($context[$propertyName], 'mixed');
+                    $value = DataConverter::convert($context[$propertyName], 'mixed', $rule);
                 }
-            }
-
-            $rule = $this->reader->getPropertyAnnotation($property, Rule::class);
-            if (!empty($rule)) {
-                $resultRule = RuleMapper::setRule($rule->name)->validation($value, $rule->params);
-                if (!$resultRule) continue;
             }
 
             if ($property->isPublic()) {
@@ -100,54 +95,6 @@ abstract class Mapper implements MapperInterface
             return $propertyName;
         }
         return '';
-    }
-
-    /**
-     * @param $data
-     * @param $type
-     * @return array|bool|float|int|object|string|null
-     * @throws \Exception
-     */
-    private function inspectValue($data, $type)
-    {
-        switch ($type) {
-            case 'int':
-            case 'integer':
-                $value = (int)$data;
-                break;
-            case 'float':
-            case 'double':
-            case 'real':
-                $value = (float)$data;
-                break;
-            case 'bool':
-            case 'boolean':
-                $value = (bool)$data;
-                break;
-            case 'array':
-                $value = (array)$data;
-                break;
-            case 'string':
-                $value = (string)$data;
-                break;
-            case 'object':
-                $value = (object)$data;
-                break;
-            case 'date':
-            case 'datetime':
-                $validPattern = '~^\d{4}-\d{2}-\d{2}((T|\s{1})\d{2}:\d{2}:\d{2}(\.\d{1,3}(Z|)|(\+|\-)\d{2}:\d{2}|)|)$~';
-                if (preg_match($validPattern, $data)) {
-                    $value = new \DateTime($data);
-                } else {
-                    $value = new \DateTime(date('Y-m-d H:i:s', strtotime($data)));
-                }
-                break;
-            default:
-                $value = $data;
-                break;
-        }
-
-        return $value;
     }
 
     /**

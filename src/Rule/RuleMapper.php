@@ -49,6 +49,9 @@ class RuleMapper
             case 'string':
                 return new StringRule();
                 break;
+            default:
+                return null;
+                break;
         }
     }
 }

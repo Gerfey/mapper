@@ -4,6 +4,7 @@ namespace Gerfey\Mapper\Annotation;
 
 /**
  * @Annotation
+ * @Target("PROPERTY")
  */
 class Field
 {
