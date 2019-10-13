@@ -9,7 +9,9 @@ use Gerfey\Mapper\Rule\Variant\EmailRule;
 use Gerfey\Mapper\Rule\Variant\FloatRule;
 use Gerfey\Mapper\Rule\Variant\IntegerRule;
 use Gerfey\Mapper\Rule\Variant\IpRule;
+use Gerfey\Mapper\Rule\Variant\LengthRule;
 use Gerfey\Mapper\Rule\Variant\LimitRule;
+use Gerfey\Mapper\Rule\Variant\LongRule;
 use Gerfey\Mapper\Rule\Variant\ObjectRule;
 use Gerfey\Mapper\Rule\Variant\StringRule;
 
@@ -20,6 +22,9 @@ class RuleMapper
         switch ($name) {
             case 'limit':
                 return new LimitRule();
+                break;
+            case 'length':
+                return new LengthRule();
                 break;
             case 'array':
                 return new ArrayRule();

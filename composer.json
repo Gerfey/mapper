@@ -3,7 +3,14 @@
   "version": "0.4",
   "type": "library",
   "description": "Map nested Json|Array structures.",
-  "keywords": ["Mapper", "Json", "Array", "JsonMapper", "ArrayMapper"],
+  "keywords": [
+    "Gerfey",
+    "Mapper",
+    "Json",
+    "Array",
+    "JsonMapper",
+    "ArrayMapper"
+  ],
   "license": "MIT",
   "authors": [
     {
